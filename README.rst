@@ -1,8 +1,6 @@
 GetWebFilesInator
 =================
 
-|build-status| |docs|
-
 Description
 -----------
 
