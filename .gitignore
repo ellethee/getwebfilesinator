@@ -1,0 +1,7 @@
+*.yaml
+*.log
+*.json
+*.pyc
+*.pyo
+tmp/
+.cache/

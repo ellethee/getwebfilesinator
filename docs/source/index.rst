@@ -12,6 +12,13 @@ for simplest tasks can be more suitable than a real dependency manager.
 All you need is to know were your libraries are and a yaml o json configuration
 file.
 
+Requirements
+------------
+
+    - ArgParseInator    (pip install ArgParseInator)
+    - PyYAML            (pip install PyYAML)
+    - requests          (pip install requests)
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
