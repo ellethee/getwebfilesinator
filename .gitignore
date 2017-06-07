@@ -5,3 +5,6 @@
 *.pyo
 tmp/
 .cache/
+docs/build/
+docs/Makefile
+docs/source/spelling_wordlist.txt

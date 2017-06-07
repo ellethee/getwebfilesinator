@@ -32,7 +32,7 @@ class GwfiClient(object):
         classes.ListKeeper(cfg)
         # save the configuration
         self.cfg = cfg
-        self.cfg.paths.gwfi = dirname(abspath(sys.argv[0]))
+        self.cfg.paths.gwfi = utils.GWFI_PATH
         # ok, reupdate paths.
         utils.update_paths(self.cfg.paths, self.cfg)
         # twice.. i should fix this.

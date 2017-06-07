@@ -20,8 +20,9 @@ import zipfile
 import json
 import yaml
 from getwebfilesinator import classes
+GWFI_PATH = dirname(dirname(abspath(__file__)))
 # default cache path
-CACHE_PATH = join(dirname(sys.argv[0]), '.cache')
+CACHE_PATH = join(GWFI_PATH, '.cache')
 # default source block
 BLOCKS = {
     'js': '<script type="text/javascript" src="{}"></script>',
@@ -41,11 +42,10 @@ del_http = re.compile(r'(?i)^https?:\/\/').sub
 def setup_logger():
     """Logger setup"""
     # get the log path
-    logname = join(dirname(sys.argv[0]), 'getwebfilesinator.log')
+    logname = join(GWFI_PATH, 'getwebfilesinator.log')
     try:
         # try to get the logging configuration.
-        logcfg = yaml.load(
-            open(join(dirname(sys.argv[0]), 'logging.yaml'), 'rb'))
+        logcfg = yaml.load(open(join(GWFI_PATH, 'logging.yaml'), 'rb'))
         # setup the FileHandler filename
         logcfg['handlers']['file']['filename'] = logname
         # load configuration via dictConfig
@@ -57,7 +57,6 @@ def setup_logger():
 setup_logger()
 # get the logger for module.
 log = getLogger(__name__)
-
 
 
 def config_factory(filename):
