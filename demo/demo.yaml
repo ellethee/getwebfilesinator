@@ -1,0 +1,74 @@
+##
+# GetWebFileInator Demo configuration.
+#
+
+# we can configure our github account
+#github_username: 
+#github_password: 
+
+# We configure out paths 
+# NOTE: static must be present.
+paths:
+  source: "{cfgpath}"
+  static: "{source}/static"
+  js: "{static}/js"
+  css: "{static}/css"
+  fonts: "{static}/fonts"
+  locales: "{static}/js/locales"
+  downloaders: "{source}"
+
+# add a custom downloader.
+downloaders:
+  - [test_downloader, "{downloaders}/test_downloader.py"]
+
+# define our tests using regexp to guess destination for files.
+tests:
+  - ['(?i)\/locales?\/.*\.js$', "{locales}"]
+  - ['(?i)\.js$', "{js}"]
+  - ['(?i)\.css$', "{css}"]
+  - ['(?i)\.(woff2?|ttf|otf|eot)$', "{fonts}"]
+
+# define our templates so we can have a html compile.
+templates:
+  - source: "{source}/scripts.jinja"
+    dest: "{source}/templates/demo/scripts.jinja"
+  - source: "{source}/headers.jinja"
+    dest: "{source}/templates/demo/headers.jinja"
+
+# define our file list.
+files:
+# jQuery (in this case it will guess a download get_type)
+  - url: https://code.jquery.com/jquery-3.2.1.min.js
+    filename: "dist/jquery.min.js"
+# Bootstrap (guess a github get_type)
+  - url: 'twbs/bootstrap'
+    files:
+      - filename: js/bootstrap.min.js
+      - filename: css/bootstrap.min.css
+      - filename: css/bootstrap-theme.min.css
+      - filename: fonts/*.woff*
+#FullCalendar (guess a github get_type)
+  - url: fullcalendar/fullcalendar
+    files:
+      - filename: fullcalendar.min.js
+      - filename: fullcalendar.min.css
+      - filename: locale/it.js
+        dest: "{locales}/fullcalendar" # we difined file location too.
+# moment.js (guess a github_raw get_type)
+  - url: moment/moment
+    filename: min/moment-with-locales.min.js
+# pnorify.custom.js (download with GET query string)
+  - url: https://sciactive.com/pnotify/buildcustom.php?mode=js&min=true&modules=desktop-buttons-nonblock-animate-confirm-callbacks-history&cff=.js
+    filename: pnotify.custom.min.js
+# pnorify.custom.css (download with GET query string)
+  - url: https://sciactive.com/pnotify/buildcustom.php?mode=js&min=true&modules=desktop-buttons-nonblock-animate-confirm-callbacks-history&cff=.css
+    filename: pnotify.custom.min.css
+# Font-Awesome
+  - url: FortAwesome/Font-Awesome
+    files:
+      - filename: css/font-awesome.min.css
+      - filename: fonts/fontawesome-webfont.woff*
+# test_downloader just to see our test downloader
+  - url: imatest 
+# greet downloader
+  - url: greet://ellethee
