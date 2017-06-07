@@ -1,0 +1,11 @@
+appdirs
+ArgParseInator
+certifi
+chardet
+idna
+packaging
+pyparsing
+PyYAML
+requests
+six
+urllib3
