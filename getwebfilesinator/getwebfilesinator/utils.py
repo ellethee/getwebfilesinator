@@ -158,7 +158,8 @@ def is_cached(sfile, cfg):
     try:
         # if the file exist in the cache path and is not a **master.zip**
         # we will use the cached file.
-        if isfile(filename) and basename(filename).lower() != 'master.zip':
+        if isfile(filename) and (
+                basename(filename).lower() != 'master.zip' or cfg.dontdownload):
             # we return the file is cached and te filename.
             return True, filename
     except IOError:
