@@ -8,3 +8,6 @@ tmp/
 docs/build/
 docs/Makefile
 docs/source/spelling_wordlist.txt
+demo/static/
+demo/templates/
+/.project
