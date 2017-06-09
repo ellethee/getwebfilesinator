@@ -230,7 +230,7 @@ def process_zip(sfile, cfg):
         # cycle through the files in sfile
         for rfile in sfile.files:
             # copy parent's properties
-            rfile.weakupdate(sfile, _skipkeys=['files'])
+            rfile.weakupdate(sfile, skipkeys=['files'])
             # cycle through the extracted file for the rfile (could be a glob
             # syntax in the filename).
             for filename in [join(sfile.tmpdir, f) for f in rfile.zfiles]:
