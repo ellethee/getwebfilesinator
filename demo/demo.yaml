@@ -49,6 +49,7 @@ files:
       - filename: fonts/*.woff*
 #FullCalendar (guess a github get_type)
   - url: fullcalendar/fullcalendar
+    group: django
     files:
       - filename: fullcalendar.min.js
       - filename: fullcalendar.min.css
@@ -56,6 +57,7 @@ files:
         dest: "{locales}/fullcalendar" # we difined file location too.
 # moment.js (guess a github_raw get_type)
   - url: moment/moment
+    group: django
     filename: min/moment-with-locales.min.js
 # pnorify.custom.js (download with GET query string)
   - url: https://sciactive.com/pnotify/buildcustom.php?mode=js&min=true&modules=desktop-buttons-nonblock-animate-confirm-callbacks-history&cff=.js
@@ -63,11 +65,11 @@ files:
 # pnorify.custom.css (download with GET query string)
   - url: https://sciactive.com/pnotify/buildcustom.php?mode=js&min=true&modules=desktop-buttons-nonblock-animate-confirm-callbacks-history&cff=.css
     filename: pnotify.custom.min.css
-# Font-Awesome
-  - url: FortAwesome/Font-Awesome
-    files:
-      - filename: css/font-awesome.min.css
-      - filename: fonts/fontawesome-webfont.woff*
+## Font-Awesome
+#  - url: FortAwesome/Font-Awesome
+#    files:
+#      - filename: css/font-awesome.min.css
+#      - filename: fonts/fontawesome-webfont.woff*
 # test_downloader just to see our test downloader
   - url: imatest 
 # greet downloader
