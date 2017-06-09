@@ -37,6 +37,7 @@ parse_blocks = re.compile(
     r'(?ism)<!--\s*gwfi_block_(\w+)\s+(.+?)\s*-->').findall
 # http deleter
 del_http = re.compile(r'(?i)^https?:\/\/').sub
+get_pattern = re.compile(r'\.(\w+)::(.+)?').match
 
 
 def setup_logger():
@@ -228,27 +229,27 @@ def process_zip(sfile, cfg):
         lstk = classes.ListKeeper()
         # cycle through the files in sfile
         for rfile in sfile.files:
-            # setup the target destination path
-            rfile.dest = rfile.dest or sfile.dest
+            # copy parent's properties
+            rfile.weakupdate(sfile, _skipkeys=['files'])
             # cycle through the extracted file for the rfile (could be a glob
             # syntax in the filename).
             for filename in [join(sfile.tmpdir, f) for f in rfile.zfiles]:
+                # our target is a rfile copy with some difference.
+                target = classes.Edo(rfile.copy())
+                target.filename = filename
                 # if we don't have a destination will try to guess it.
-                if not rfile.dest:
-                    dest = guess_dest(filename, cfg)
-                else:
-                    dest = rfile.dest
+                target.dest = target.dest or guess_dest(filename, cfg)
                 # at this point if we don't have a destination will raise an
                 # Error.
-                if not dest:
+                if not target.dest:
                     raise IOError("Can't find a destination for %s" % filename)
                 # try to create the destination path
-                mkdir(dest)
+                mkdir(target.dest)
                 # our target name
-                target = join(dest, basename(filename))
-                log.debug("Copying %s to %s", filename, target)
+                target.target = join(target.dest, basename(filename))
+                log.debug("Copying %s to %s", filename, target.target)
                 # copy the file
-                shutil.copy(filename, target)
+                shutil.copy(filename, target.target)
                 # append the target to the ListKeeper
                 lstk.append(target)
 
@@ -292,7 +293,8 @@ def get_blocks(text):
     # match groups.
     blocks = [
         classes.Edo(zip(
-            ['type', 'path', 'pattern'], [b[0].lower()] + split(b[1])))
+            ['type', 'path', 'originalpattern'],
+            [b[0].lower()] + split(b[1]) + ['']))
         for b in parse_blocks(text)]
     return blocks
 
@@ -314,14 +316,19 @@ def write_html(cfg):
         for block in template.blocks:
             block.block = BLOCKS.get(block.type)
             block.template = template
-            block.pattern = block.pattern or ''
+            block.pattern = block.originalpattern
+            pieces = get_pattern(block.pattern)
+            if pieces:
+                block.pattern = pieces.groups()
+            elif block.pattern:
+                block.pattern = ('target', block.pattern)
             # we use the block path lenght to insert the block in the list.
             # at the right position.
             if block.path:
                 block_idx.append(block)
     # ok, sort reversed. Is better if we start to process from the longest path
     # plus pattern.
-    block_idx.sort(key=lambda x: len(x.path + x.pattern), reverse=True)
+    block_idx.sort(key=lambda x: len(x.path + x.originalpattern), reverse=True)
     # cycle through our sorted blocks
     for block in block_idx:
         log.debug("Writing block %s", block.path)
@@ -332,18 +339,18 @@ def write_html(cfg):
         # create the string block joining the formatted template block
         # for each target in the ListKeeper which starts with block path.
         sblock = "\n".join([
-            block.block.format(join(static, t))
+            block.block.format(join(static, t.target))
             for t in lstk.get_from_path(block.path, block.pattern)])
         # add some comment tag
         sblock = "\n".join([
-            "<!-- gwfi {} {} -->".format(block.path, block.pattern),
+            "<!-- gwfi {} {} -->".format(block.path, block.originalpattern),
             sblock,
-            "<!-- /gwfi {} {} -->".format(block.path, block.pattern),
+            "<!-- /gwfi {} {} -->".format(block.path, block.originalpattern),
         ])
         # replace the template block with che string block.
         block.template.content = re.sub(
             r'(?ism)<!--\s*gwfi_block_{}\s+{}\s*{}\s*-->'.format(
-                block.type, block.path, block.pattern),
+                block.type, block.path, block.originalpattern),
             sblock, block.template.content)
     # Write templates result to the respective destinations.
     for template in cfg.templates:

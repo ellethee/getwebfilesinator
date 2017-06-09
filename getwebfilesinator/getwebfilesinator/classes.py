@@ -46,6 +46,13 @@ class Edo(dict):
     def __dir__(self):
         return self.keys() + self.__dict__.keys()
 
+    def weakupdate(self, dtc, skipkeys=None):
+        """Update value if key not exists and if non in _skipkeys"""
+        skipkeys = skipkeys or []
+        for key, value in dtc.iteritems():
+            if not key in skipkeys and not key in self:
+                self[key] = value
+
     @classmethod
     def dict2edo(cls, dtc):
         """
@@ -76,33 +83,29 @@ class ListKeeper(object):
 
     @staticmethod
     def _is_intest(pattern, target):
-        return (True if pattern is None
-                else re.search(pattern, target) is not None)
+        if not pattern:
+            return True
+        return re.search(pattern[1], target.get(pattern[0]) or '') is not None
 
     def get_from_path(self, path, pattern=None):
         """Return list of targets from path"""
         # first get all targets matching path and pattern if any.
         targets = [
-            i for i in self.targets
-            if i.startswith(path) and self._is_intest(pattern, i)]
+            t for t in self.targets
+            if t.target.startswith(path) and self._is_intest(pattern, t)]
         # then remove all filtered targets from the class targets.
         for target in targets:
             self.targets.remove(target)
         return targets
 
-    def append(self, sfile):
+    def append(self, target):
         """Append target to targets list"""
-        # the target could be a sfile or a string
-        if isinstance(sfile, basestring):
-            target = sfile
-        else:
-            target = sfile.target
         # remove the *static* part of the target.
-        target = relpath(target, start=self.paths.static)
-        # if sfile is a dict instance and have a index item we
+        target.target = relpath(target.target, start=self.paths.static)
+        # if target is a dict instance and have a index item we
         # use it to insert the target in the list
-        if isinstance(sfile, dict) and isinstance(sfile.index, int):
-            self.targets.insert(sfile.index, target)
+        if  isinstance(target.index, int):
+            self.targets.insert(target.index, target)
         else:
             # else just append it.
             self.targets.append(target)
